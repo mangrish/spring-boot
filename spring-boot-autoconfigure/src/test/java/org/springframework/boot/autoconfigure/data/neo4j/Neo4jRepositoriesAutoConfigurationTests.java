@@ -16,11 +16,12 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import static org.assertj.core.api.Assertions.*;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.neo4j.ogm.session.SessionFactory;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -33,6 +34,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.repository.config.EnableExperimentalNeo4jRepositories;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Neo4jRepositoriesAutoConfiguration}.
@@ -60,6 +63,8 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 				.getBean(Neo4jMappingContext.class);
 		assertThat(mappingContext.getPersistentEntity(City.class)).isNotNull();
 	}
+
+
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.DriverConfiguration;
+
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -130,9 +131,11 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 		if (uri.startsWith("bolt")) {
 			driverConfiguration.setDriverClassName(BOLT_DRIVER);
-		} else if (uri.startsWith("http")) {
+		}
+		else if (uri.startsWith("http")) {
 			driverConfiguration.setDriverClassName(HTTP_DRIVER);
-		} else {
+		}
+		else {
 			driverConfiguration.setDriverClassName(EMBEDDED_DRIVER);
 		}
 
