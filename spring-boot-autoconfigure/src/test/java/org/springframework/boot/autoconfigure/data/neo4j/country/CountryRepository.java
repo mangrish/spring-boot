@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j.country;
 
-import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-public interface CountryRepository extends GraphRepository<Country> {
+public interface CountryRepository extends Neo4jRepository<Country> {
 
 }

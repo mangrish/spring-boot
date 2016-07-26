@@ -3273,7 +3273,7 @@ working with Neo4j, including the `spring-boot-starter-data-neo4j` '`Starter`'.
 
 [[boot-features-connecting-to-neo4j]]
 ==== Connecting to a Neo4j database
-You can inject an auto-configured `Neo4jSession`, `Session` or `Neo4jOperations` instance
+You can inject an auto-configured `Session` instance
 as you would any other Spring Bean. By default the instance will attempt to connect to a
 Neo4j server using `localhost:7474`:
 
@@ -3295,8 +3295,7 @@ Neo4j server using `localhost:7474`:
 ----
 
 You can take full control of the configuration by adding a
-`org.neo4j.ogm.config.Configuration` `@Bean` of your own. Also, adding a `@Bean` of type
-`Neo4jOperations` disables the auto-configuration.
+`org.neo4j.ogm.config.Configuration` `@Bean` of your own.
 
 You can configure the user and credentials to use via the `spring.data.neo4j.*`
 properties:
@@ -3328,18 +3327,6 @@ persistence for the embedded mode:
 
 
 
-[[boot-features-neo4j-ogm-session]]
-==== Neo4jSession
-
-By default, the lifetime of the session is scope to the application. If you are running a
-web application you can change it to scope or request easily:
-
-----
-	spring.data.neo4j.session.scope=session
-----
-
-
-
 [[boot-features-spring-data-neo4j-repositories]]
 ==== Spring Data Neo4j repositories
 Spring Data includes repository support for Neo4j.
@@ -3349,14 +3336,14 @@ infrastructure; so you could take the JPA example from earlier and, assuming tha
 is now a Neo4j OGM `@NodeEntity` rather than a JPA `@Entity`, it will work in the same
 way.
 
-TIP: You can customize entity scanning locations using the `@NodeEntityScan` annotation.
+TIP: You can customize entity scanning locations using the `@EntityScan` annotation.
 
 To enable repository support (and optionally support for `@Transactional`), add the
 following two annotations to your Spring configuration:
 
 [source,java,indent=0]
 ----
-    @EnableNeo4jRepositories(basePackages = "com.example.myapp.repository")
+    @EnableExperimentalNeo4jRepositories(basePackages = "com.example.myapp.repository")
     @EnableTransactionManagement
 ----
 
@@ -3368,7 +3355,7 @@ following two annotations to your Spring configuration:
 	import org.springframework.data.domain.*;
 	import org.springframework.data.repository.*;
 
-	public interface CityRepository extends GraphRepository<City> {
+	public interface CityRepository extends Neo4jRepository<City> {
 
 		Page<City> findAll(Pageable pageable);
 

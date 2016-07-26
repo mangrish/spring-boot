@@ -16,10 +16,11 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.After;
 import org.junit.Test;
 import org.neo4j.ogm.session.SessionFactory;
-
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -31,9 +32,7 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
-import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.data.neo4j.repository.config.EnableExperimentalNeo4jRepositories;
 
 /**
  * Tests for {@link Neo4jRepositoriesAutoConfiguration}.
@@ -85,7 +84,7 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.neo4j.uri=http://localhost:9797");
 		this.context.register(configurationClasses);
-		this.context.register(Neo4jDataAutoConfiguration.class,
+		this.context.register(Neo4jOgmAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -105,17 +104,16 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 	@Configuration
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
-	@EnableNeo4jRepositories(basePackageClasses = CityNeo4jRepository.class)
+	@EnableExperimentalNeo4jRepositories(basePackageClasses = CityNeo4jRepository.class)
 	protected static class CustomizedConfiguration {
 
 	}
 
 	@Configuration
 	// To not find any repositories
-	@EnableNeo4jRepositories("foo.bar")
+	@EnableExperimentalNeo4jRepositories("foo.bar")
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
 	protected static class SortOfInvalidCustomConfiguration {
 
 	}
-
 }

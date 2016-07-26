@@ -31,13 +31,12 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
-import org.springframework.data.neo4j.template.Neo4jOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link Neo4jDataAutoConfiguration}. Tests can't use the embedded driver as we
+ * Tests for {@link Neo4jOgmAutoConfiguration}. Tests can't use the embedded driver as we
  * use Lucene 4 and Neo4j still requires 3.
  *
  * @author Stephane Nicoll
@@ -58,7 +57,7 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void defaultConfiguration() {
 		load(null, "spring.data.neo4j.uri=http://localhost:8989");
-		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(Session.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
@@ -77,7 +76,7 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void customNeo4jOperations() {
 		load(CustomNeo4jOperations.class);
-		assertThat(this.context.getBean(Neo4jOperations.class))
+		assertThat(this.context.getBean(Session.class))
 				.isSameAs(this.context.getBean("myNeo4jOperations"));
 		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
 				.hasSize(0);
@@ -90,7 +89,7 @@ public class Neo4jDataAutoConfigurationTests {
 		load(CustomConfiguration.class);
 		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class))
 				.isSameAs(this.context.getBean("myConfiguration"));
-		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(Session.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
@@ -101,7 +100,7 @@ public class Neo4jDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
-		this.context.register(Neo4jDataAutoConfiguration.class);
+		this.context.register(Neo4jOgmAutoConfiguration.class);
 		this.context.refresh();
 		assertDomainTypesDiscovered(this.context.getBean(Neo4jMappingContext.class),
 				City.class);
@@ -114,7 +113,7 @@ public class Neo4jDataAutoConfigurationTests {
 			ctx.register(config);
 		}
 		ctx.register(PropertyPlaceholderAutoConfiguration.class,
-				Neo4jDataAutoConfiguration.class);
+				Neo4jOgmAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
 	}
@@ -130,8 +129,8 @@ public class Neo4jDataAutoConfigurationTests {
 	static class CustomNeo4jOperations {
 
 		@Bean
-		public Neo4jOperations myNeo4jOperations() {
-			return mock(Neo4jOperations.class);
+		public Session mySession() {
+			return mock(Session.class);
 		}
 
 	}

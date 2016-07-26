@@ -41,6 +41,8 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	static final String EMBEDDED_DRIVER = "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver";
 
+	static final String BOLT_DRIVER = "org.neo4j.ogm.drivers.bolt.driver.BoltDriver";
+
 	static final String HTTP_DRIVER = "org.neo4j.ogm.drivers.http.driver.HttpDriver";
 
 	static final String DEFAULT_HTTP_URI = "http://localhost:7474";
@@ -150,6 +152,9 @@ public class Neo4jProperties implements ApplicationContextAware {
 			}
 			if ("http".equals(scheme)) {
 				return HTTP_DRIVER;
+			}
+			if ("bolt".equals(scheme)) {
+				return BOLT_DRIVER;
 			}
 			throw new IllegalArgumentException(
 					"Could not deduce driver to use based on URI '" + uri + "'");

@@ -91,12 +91,6 @@
     "defaultValue": true
   },
   {
-    "name": "spring.data.neo4j.session.scope",
-    "type": "java.lang.String",
-    "description": "Scope (lifetime) of the session.",
-    "defaultValue": "singleton"
-  },
-  {
     "name": "spring.data.redis.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Redis repositories.",

@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.data.neo4j.repository.config.EnableExperimentalNeo4jRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -114,14 +114,14 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Configuration
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	// Not this package or its parent
-	@EnableNeo4jRepositories(basePackageClasses = Country.class)
+	@EnableExperimentalNeo4jRepositories(basePackageClasses = Country.class)
 	protected static class TestConfiguration {
 
 	}
 
 	@Configuration
 	@TestAutoConfigurationPackage(EmptyMarker.class)
-	@EnableNeo4jRepositories(basePackageClasses = Country.class)
+	@EnableExperimentalNeo4jRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
 	protected static class MixedConfiguration {
@@ -159,7 +159,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class,
 					JpaRepositoriesAutoConfiguration.class,
-					Neo4jDataAutoConfiguration.class,
+					Neo4jOgmAutoConfiguration.class,
 					Neo4jRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}
