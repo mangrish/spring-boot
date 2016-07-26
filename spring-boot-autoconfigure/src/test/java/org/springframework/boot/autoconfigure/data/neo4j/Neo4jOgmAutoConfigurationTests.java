@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 
-
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +31,9 @@ import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableExperimentalNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewFilter;
