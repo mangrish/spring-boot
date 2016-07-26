@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 
-import javax.persistence.EntityManagerFactory;
-
 import org.junit.After;
 import org.junit.Test;
 
@@ -72,7 +70,7 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		assertThat(this.context.getBean(PlatformTransactionManager.class)).isNotNull();
-		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
+		assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
 	}
 
 

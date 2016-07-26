@@ -23,18 +23,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.neo4j.ogm.drivers.http.driver.HttpDriver;
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
+import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
+import org.springframework.data.neo4j.repository.config.EnableExperimentalNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewFilter;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
@@ -168,14 +167,9 @@ public class Neo4jOgmAutoConfigurationTests {
 
 
 	@Configuration
+	@EnableExperimentalNeo4jRepositories(basePackageClasses = CityRepository.class)
+	@TestAutoConfigurationPackage(City.class)
 	static class CustomConfiguration {
 
-		@Bean
-		public org.neo4j.ogm.config.Configuration myConfiguration() {
-			org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
-			configuration.driverConfiguration()
-					.setDriverClassName(HttpDriver.class.getName());
-			return configuration;
-		}
 	}
 }
