@@ -16,17 +16,13 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.DriverConfiguration;
-
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Neo4j.
@@ -45,10 +41,8 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	static final String HTTP_DRIVER = "org.neo4j.ogm.drivers.http.driver.HttpDriver";
 
-	static final String DEFAULT_HTTP_URI = "http://localhost:7474";
-
 	/**
-	 * URI used by the driver. Auto-detected by default.
+	 * URI used by the driver.
 	 */
 	private String uri;
 
@@ -67,7 +61,10 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 */
 	private String compiler;
 
-	private final Embedded embedded = new Embedded();
+	/**
+	 * Driver to use.
+	 */
+	private String driver;
 
 	private ClassLoader classLoader = Neo4jProperties.class.getClassLoader();
 
@@ -103,8 +100,12 @@ public class Neo4jProperties implements ApplicationContextAware {
 		this.compiler = compiler;
 	}
 
-	public Embedded getEmbedded() {
-		return this.embedded;
+	public String getDriver() {
+		return driver;
+	}
+
+	public void setDriver(String driver) {
+		this.driver = driver;
 	}
 
 	@Override
@@ -114,82 +115,30 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	/**
 	 * Create a {@link Configuration} based on the state of this instance.
+	 *
 	 * @return a configuration
 	 */
 	public Configuration createConfiguration() {
 		Configuration configuration = new Configuration();
-		configureDriver(configuration.driverConfiguration());
+		DriverConfiguration driverConfiguration = configuration.driverConfiguration();
+
+		if (!StringUtils.isEmpty(this.username) && !StringUtils.isEmpty(this.password)) {
+			driverConfiguration.setCredentials(this.username, this.password);
+		}
+
+		driverConfiguration.setURI(uri);
+
+		if (uri.startsWith("bolt")) {
+			driverConfiguration.setDriverClassName(BOLT_DRIVER);
+		} else if (uri.startsWith("http")) {
+			driverConfiguration.setDriverClassName(HTTP_DRIVER);
+		} else {
+			driverConfiguration.setDriverClassName(EMBEDDED_DRIVER);
+		}
+
 		if (this.compiler != null) {
 			configuration.compilerConfiguration().setCompilerClassName(this.compiler);
 		}
 		return configuration;
 	}
-
-	private void configureDriver(DriverConfiguration driverConfiguration) {
-		if (this.uri != null) {
-			configureDriverFromUri(driverConfiguration, this.uri);
-		}
-		else {
-			configureDriverWithDefaults(driverConfiguration);
-		}
-		if (this.username != null && this.password != null) {
-			driverConfiguration.setCredentials(this.username, this.password);
-		}
-	}
-
-	private void configureDriverFromUri(DriverConfiguration driverConfiguration,
-			String uri) {
-		driverConfiguration.setDriverClassName(deduceDriverFromUri());
-		driverConfiguration.setURI(uri);
-	}
-
-	private String deduceDriverFromUri() {
-		try {
-			URI uri = new URI(this.uri);
-			String scheme = uri.getScheme();
-			if (scheme == null || scheme.equals("file")) {
-				return EMBEDDED_DRIVER;
-			}
-			if ("http".equals(scheme)) {
-				return HTTP_DRIVER;
-			}
-			if ("bolt".equals(scheme)) {
-				return BOLT_DRIVER;
-			}
-			throw new IllegalArgumentException(
-					"Could not deduce driver to use based on URI '" + uri + "'");
-		}
-		catch (URISyntaxException ex) {
-			throw new IllegalArgumentException(
-					"Invalid URI for spring.data.neo4j.uri '" + this.uri + "'", ex);
-		}
-	}
-
-	private void configureDriverWithDefaults(DriverConfiguration driverConfiguration) {
-		if (getEmbedded().isEnabled()
-				&& ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
-			driverConfiguration.setDriverClassName(EMBEDDED_DRIVER);
-			return;
-		}
-		driverConfiguration.setDriverClassName(HTTP_DRIVER);
-		driverConfiguration.setURI(DEFAULT_HTTP_URI);
-	}
-
-	public static class Embedded {
-
-		/**
-		 * Enable embedded mode if the embedded driver is available.
-		 */
-		private boolean enabled = true;
-
-		public boolean isEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-	}
-
 }

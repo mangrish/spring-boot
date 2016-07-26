@@ -48,20 +48,15 @@ public class Neo4jPropertiesTests {
 		}
 	}
 
-	@Test
-	public void defaultUseEmbeddedInMemoryIfAvailable() {
-		Neo4jProperties properties = load(true);
-		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER, null);
-	}
 
 	@Test
-	public void defaultUseHttpDriverIfEmbeddedDriverIsNotAvailable() {
-		Neo4jProperties properties = load(false);
+	public void boltUriUseBoltServer() {
+		Neo4jProperties properties = load(true,
+				"spring.data.neo4j.uri=bolt://localhost");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				Neo4jProperties.DEFAULT_HTTP_URI);
+		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, "bolt://localhost");
 	}
+
 
 	@Test
 	public void httpUriUseHttpServer() {
@@ -98,15 +93,6 @@ public class Neo4jPropertiesTests {
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
 				"http://user:secret@my-server:7474");
 		assertCredentials(configuration, "user", "secret");
-	}
-
-	@Test
-	public void embeddedModeDisabledUseHttpUri() {
-		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.embedded.enabled=false");
-		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				Neo4jProperties.DEFAULT_HTTP_URI);
 	}
 
 	@Test
