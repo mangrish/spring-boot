@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Neo4jProperties}.
  *
  * @author Stephane Nicoll
+ * @author Mark Angrish
  */
 public class Neo4jPropertiesTests {
 
@@ -51,8 +52,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void boltUriUseBoltServer() {
-		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=bolt://localhost");
+		Neo4jProperties properties = load("spring.data.neo4j.uri=bolt://localhost");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, "bolt://localhost");
 	}
@@ -60,16 +60,14 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void httpUriUseHttpServer() {
-		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=http://localhost:7474");
+		Neo4jProperties properties = load("spring.data.neo4j.uri=http://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://localhost:7474");
 	}
 
 	@Test
 	public void fileUriUseEmbeddedServer() {
-		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=file://var/tmp/graph.db");
+		Neo4jProperties properties = load("spring.data.neo4j.uri=file://var/tmp/graph.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
 				"file://var/tmp/graph.db");
@@ -77,8 +75,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void credentialsAreSet() {
-		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=http://localhost:7474",
+		Neo4jProperties properties = load("spring.data.neo4j.uri=http://localhost:7474",
 				"spring.data.neo4j.username=user", "spring.data.neo4j.password=secret");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://localhost:7474");
@@ -87,8 +84,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void credentialsAreSetFromUri() {
-		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=http://user:secret@my-server:7474");
+		Neo4jProperties properties = load("spring.data.neo4j.uri=http://user:secret@my-server:7474");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
 				"http://user:secret@my-server:7474");
@@ -97,8 +93,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void embeddedModeWithRelativeLocation() {
-		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=target/neo4j/my.db");
+		Neo4jProperties properties = load("spring.data.neo4j.uri=target/neo4j/my.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
 				"target/neo4j/my.db");
@@ -129,21 +124,13 @@ public class Neo4jPropertiesTests {
 		}
 	}
 
-	public Neo4jProperties load(final boolean embeddedAvailable, String... environment) {
+	public Neo4jProperties load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.setClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()) {
 
 			@Override
 			protected Class<?> loadClass(String name, boolean resolve)
 					throws ClassNotFoundException {
-				if (name.equals(Neo4jProperties.EMBEDDED_DRIVER)) {
-					if (embeddedAvailable) {
-						return TestEmbeddedDriver.class;
-					}
-					else {
-						throw new ClassNotFoundException();
-					}
-				}
 				return super.loadClass(name, resolve);
 			}
 
@@ -160,9 +147,4 @@ public class Neo4jPropertiesTests {
 	static class TestConfiguration {
 
 	}
-
-	private static class TestEmbeddedDriver {
-
-	}
-
 }
